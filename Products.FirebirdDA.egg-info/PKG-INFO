@@ -1,0 +1,26 @@
+Metadata-Version: 1.0
+Name: Products.FirebirdDA
+Version: 0.6
+Summary: Firebird database adapter for Zope2
+Home-page: https://github.com/nakagami/Products.FirebirdDA
+Author: Hajime Nakagami
+Author-email: nakagami@gmail.com
+License: ZPL
+Description: Introduction
+        ============
+        
+        
+        
+        This product may contain traces of nuts.
+        
+        Changelog
+        =========
+        
+        0.6dev (unreleased)
+        -------------------
+        
+        - Initial release
+        
+Keywords: Firebird
+Platform: UNKNOWN
+Classifier: Programming Language :: Python

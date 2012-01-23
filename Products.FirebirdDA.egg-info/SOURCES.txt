@@ -1,0 +1,14 @@
+README.txt
+setup.py
+Products/__init__.py
+Products.FirebirdDA.egg-info/PKG-INFO
+Products.FirebirdDA.egg-info/SOURCES.txt
+Products.FirebirdDA.egg-info/dependency_links.txt
+Products.FirebirdDA.egg-info/entry_points.txt
+Products.FirebirdDA.egg-info/namespace_packages.txt
+Products.FirebirdDA.egg-info/not-zip-safe
+Products.FirebirdDA.egg-info/requires.txt
+Products.FirebirdDA.egg-info/top_level.txt
+Products/FirebirdDA/__init__.py
+Products/FirebirdDA/tests.py
+Products/FirebirdDA/zope2.py
