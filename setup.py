@@ -24,7 +24,7 @@ setup(name='Products.FirebirdDA',
       zip_safe=False,
       install_requires=[
           'setuptools',
-          # -*- Extra requirements: -*-
+          'firebirdsql',
       ],
       entry_points="""
       # -*- Entry points: -*-

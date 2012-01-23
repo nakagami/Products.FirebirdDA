@@ -15,17 +15,13 @@
 __version__='$Revision: 1.26 $'[11:-2]
 
 import os, thread, string
-import kinterbasdb
+import firebirdsql
 import Shared.DC.ZRDB.THUNK
 from DateTime import DateTime
 
 from Products.ZKInterbasdbDA import QueryError
 
 with_system_flag=0
-
-read_only_tpb = kinterbasdb.isc_tpb_read \
-            + kinterbasdb.isc_tpb_read_committed \
-            + kinterbasdb.isc_tpb_rec_version
 
 def fetchallmap(c):
     desc = c.description
@@ -40,7 +36,7 @@ def fetchallmap(c):
     return r
 
 class DB(Shared.DC.ZRDB.THUNK.THUNKED_TM):
-    database_error=kinterbasdb.Error
+    database_error=firebirdsql.Error
     opened=None
 
     def _get_db_connect(self):
@@ -48,7 +44,7 @@ class DB(Shared.DC.ZRDB.THUNK.THUNKED_TM):
         if len(self.db_conn):
             db = self.db_conn.pop()
         else:
-            db = kinterbasdb.connect(**self.conn_args)
+            db = firebirdsql.connect(**self.conn_args)
         self.lock.release()
 
         if not self.opened:
@@ -62,7 +58,7 @@ class DB(Shared.DC.ZRDB.THUNK.THUNKED_TM):
 
     def tables(self, *args, **kw):
         conn = self._get_db_connect()
-        self._begin(conn, read_only_tpb)
+        self._begin(conn, read_only=True)
         c = conn.cursor()
 
         if with_system_flag:
@@ -84,7 +80,7 @@ class DB(Shared.DC.ZRDB.THUNK.THUNKED_TM):
 
     def columns(self, table_name):
         conn = self._get_db_connect()
-        self._begin(conn, read_only_tpb)
+        self._begin(conn, read_only=True)
         c = conn.cursor()
 
         r=c.execute('''select A.rdb$field_name NAME, 
@@ -106,7 +102,7 @@ class DB(Shared.DC.ZRDB.THUNK.THUNKED_TM):
 
     def constraints(self, table_name):
         conn = self._get_db_connect()
-        self._begin(conn, read_only_tpb)
+        self._begin(conn, read_only=True)
         c = conn.cursor()
 
         r=c.execute('''select 
@@ -164,7 +160,7 @@ class DB(Shared.DC.ZRDB.THUNK.THUNKED_TM):
 
     def triggers(self, table_name):
         conn = self._get_db_connect()
-        self._begin(conn, read_only_tpb)
+        self._begin(conn, read_only=True)
         c = conn.cursor()
 
         if with_system_flag:
@@ -196,7 +192,7 @@ class DB(Shared.DC.ZRDB.THUNK.THUNKED_TM):
 
     def check_constraints(self, table_name):
         conn = self._get_db_connect()
-        self._begin(conn, read_only_tpb)
+        self._begin(conn, read_only=True)
         c = conn.cursor()
 
         r=c.execute('''select 
@@ -223,7 +219,7 @@ class DB(Shared.DC.ZRDB.THUNK.THUNKED_TM):
 
     def generators(self):
         conn = self._get_db_connect()
-        self._begin(conn, read_only_tpb)
+        self._begin(conn, read_only=True)
         c = conn.cursor()
 
         if with_system_flag:
@@ -250,7 +246,7 @@ class DB(Shared.DC.ZRDB.THUNK.THUNKED_TM):
 
     def procedures(self):
         conn = self._get_db_connect()
-        self._begin(conn, read_only_tpb)
+        self._begin(conn, read_only=True)
         c = conn.cursor()
 
         c.execute('''select rdb$procedure_name, rdb$procedure_source 
@@ -364,11 +360,8 @@ class DB(Shared.DC.ZRDB.THUNK.THUNKED_TM):
 
         return items, result
 
-    def _begin(self, conn, tpb=None):
-        if tpb:
-            conn.begin(tpb)
-        else:
-            conn.begin()
+    def _begin(self, conn, read_only=False):
+        conn.begin()
 
     def _finish(self, conn):
         conn.commit()
