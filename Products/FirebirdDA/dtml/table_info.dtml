@@ -1,0 +1,5 @@
+<dtml-var standard_html_header>
+Owned by &dtml-TABLE_OWNER;
+<dtml-if REMARKS><br>&dtml-REMARKS;</dtml-if>
+
+<dtml-var standard_html_footer>

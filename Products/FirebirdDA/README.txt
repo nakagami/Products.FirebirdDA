@@ -1,14 +1,11 @@
-Products.FirebirdDA Package Readme
-=========================
+ZKInterbasdbDA
 
-Overview
---------
+ Hajime Nakagami &lt;nakagami@da2.so-net.ne.jp&gt;
 
-Firebird database adapter for Zope2
+ ZKInterbasdbDA is Zope database adapter for Interbase/Firebird.  
 
+ KInterbasDB ("http://kinterbasdb.sourceforge.net/":http://kinterbasdb.sourceforge.net/) is required to use it.
 
-Your tests here
----------------
-
-    >>> 1 + 1
-    3
+ This product based on ZGadfryDA(involved in Zope 2.7.0) codes,
+ and ZFirebirdDA(http://savannah.nongnu.org/projects/zfirebirdda/)'s 
+ tables() and columns() are helpful, thanks.
