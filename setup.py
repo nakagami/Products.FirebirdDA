@@ -1,13 +1,12 @@
 from setuptools import setup, find_packages
 import os
 
-version = '0.6'
+version = '0.6.0'
 
 setup(name='Products.FirebirdDA',
       version=version,
       description="Firebird database adapter for Zope2",
-      long_description=open("README.txt").read() + "\n" +
-                       open(os.path.join("docs", "HISTORY.txt")).read(),
+      long_description=open("README.txt").read(),
       # Get more strings from
       # http://pypi.python.org/pypi?:action=list_classifiers
       classifiers=[
