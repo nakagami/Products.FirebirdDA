@@ -10,16 +10,12 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-
-'''$Id: db.py,v 1.26 2009/08/09 09:13:39 nakagami Exp $'''
-__version__='$Revision: 1.26 $'[11:-2]
-
 import os, thread, string
 import firebirdsql
 import Shared.DC.ZRDB.THUNK
 from DateTime import DateTime
 
-from Products.ZKInterbasdbDA import QueryError
+from Products.FirebirdDA import QueryError
 
 with_system_flag=0
 

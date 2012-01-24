@@ -10,25 +10,19 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-__doc__='''Generic Database Adapter Package Registration
-
-$Id: __init__.py,v 1.15 2009/10/03 03:08:48 nakagami Exp $'''
-__version__='$Revision: 1.15 $'[11:-2]
-
 from App.ImageFile import ImageFile
 import os
 
 classes=('DA.Connection',)
-database_type='KInterbasdb'
+database_type='Firebird'
 
-class KInterbasdbError(Exception):
+class FirebirdError(Exception):
     pass
 
-class QueryError(KInterbasdbError):
+class QueryError(FirebirdError):
     pass
 
-misc_={'conn':
-       ImageFile('Shared/DC/ZRDB/www/DBAdapterFolder_icon.gif')}
+misc_={}
 
 for icon in ('table', 'view', 'stable', 'what',
              'field', 'text','bin','int','float',

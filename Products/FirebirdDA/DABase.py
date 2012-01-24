@@ -10,11 +10,6 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-__doc__='''Database Connection
-
-$Id: DABase.py,v 1.17 2009/10/03 03:08:48 nakagami Exp $'''
-__version__='$Revision: 1.17 $'[11:-2]
-
 import sys
 from string import join
 import Shared.DC.ZRDB.Connection

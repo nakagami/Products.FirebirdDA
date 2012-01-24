@@ -10,11 +10,7 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-database_type='KInterbasdb'
-__doc__='''%s Database Connection
-
-$Id: DA.py,v 1.4 2009/10/02 10:18:29 nakagami Exp $''' % database_type
-__version__='$Revision: 1.4 $'[11:-2]
+database_type='Firebird'
 
 from db import DB
 import sys, DABase
@@ -42,8 +38,8 @@ class Connection(DABase.Connection):
     " "
     database_type=database_type
     id='%s_database_connection' % database_type
-    meta_type=title='Z %s Database Connection' % database_type
-    icon='misc_/Z%sDA/conn' % database_type
+    meta_type=title='%s Database Connection' % database_type
+    icon='misc_/%sDA/conn' % database_type
 
     manage_properties=HTMLFile('dtml/connectionEdit', globals())
 
