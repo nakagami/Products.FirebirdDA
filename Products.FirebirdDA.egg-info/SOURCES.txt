@@ -9,6 +9,9 @@ Products.FirebirdDA.egg-info/namespace_packages.txt
 Products.FirebirdDA.egg-info/not-zip-safe
 Products.FirebirdDA.egg-info/requires.txt
 Products.FirebirdDA.egg-info/top_level.txt
+Products/FirebirdDA/DA.py
+Products/FirebirdDA/DABase.py
 Products/FirebirdDA/__init__.py
+Products/FirebirdDA/db.py
 Products/FirebirdDA/tests.py
 Products/FirebirdDA/zope2.py
