@@ -57,7 +57,7 @@ class DB(Shared.DC.ZRDB.THUNK.THUNKED_TM):
 
     def columns(self, table_name):
         self._begin()
-        c = conn.cursor()
+        c = self.conn.cursor()
 
         r=c.execute('''select A.rdb$field_name NAME, 
     A.rdb$null_flag NULL_FLAG, A.rdb$default_source DEFAULT_SOURCE,
@@ -77,7 +77,7 @@ class DB(Shared.DC.ZRDB.THUNK.THUNKED_TM):
 
     def constraints(self, table_name):
         self._begin()
-        c = conn.cursor()
+        c = self.conn.cursor()
 
         r=c.execute('''select 
     a.rdb$index_name INDEX_NAME, a.rdb$index_id INDEX_ID, 
