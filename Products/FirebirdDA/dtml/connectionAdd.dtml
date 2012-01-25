@@ -4,7 +4,7 @@
            form_title='Add Z %s Database Connection' % database_type,
 	   )">
 
-<form action="manage_addZ&dtml-database_type;Connection" method="post">
+<form action="manage_add&dtml-database_type;Connection" method="post">
 <table cellspacing="0" cellpadding="2" border="0">
   <tr>
     <td align="left" valign="top">
