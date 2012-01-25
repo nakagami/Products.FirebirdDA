@@ -39,7 +39,7 @@ class Connection(DABase.Connection):
     database_type=database_type
     id='%s_database_connection' % database_type
     meta_type=title='%s Database Connection' % database_type
-    icon='misc_/%sDA/conn' % database_type
+    icon='misc_/%sDA/conn.gif' % database_type
 
     manage_properties=HTMLFile('dtml/connectionEdit', globals())
 

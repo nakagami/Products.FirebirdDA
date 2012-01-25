@@ -24,7 +24,7 @@ class QueryError(FirebirdError):
 
 misc_={}
 
-for icon in ('table', 'view', 'stable', 'what',
+for icon in ('conn', 'table', 'view', 'stable', 'what',
              'field', 'text','bin','int','float',
              'date','time','datetime', 'generator', 'sequence',
              'procedure', 'trigger', 'trigger_inactive', 
