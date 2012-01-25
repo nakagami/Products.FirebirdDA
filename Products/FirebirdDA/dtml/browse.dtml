@@ -2,7 +2,7 @@
 <dtml-var manage_tabs>
     <dtml-tree header=info>
       <dtml-if icon>
-      <IMG SRC="&dtml-BASEPATH1;/misc_/ZKInterbasdbDA/&dtml-icon;"
+      <IMG SRC="&dtml-BASEPATH1;/misc_/FirebirdDA/&dtml-icon;"
        ALT="&dtml-Type;" BORDER="0">
       </dtml-if>
       &dtml-Name;<dtml-if Description>&nbsp;<i>&dtml-Description;</i></dtml-if>
