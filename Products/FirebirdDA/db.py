@@ -35,27 +35,9 @@ class DB(Shared.DC.ZRDB.THUNK.THUNKED_TM):
     database_error=firebirdsql.Error
     opened=None
 
-    def _get_db_connect(self):
-        self.lock.acquire()
-        if len(self.db_conn):
-            db = self.db_conn.pop()
-        else:
-            db = firebirdsql.connect(**self.conn_args)
-        self.lock.release()
-
-        if not self.opened:
-            self.opened=DateTime()
-        return db
-
-    def _putback_db_connect(self, db):
-        self.lock.acquire()
-        self.db_conn.append(db)
-        self.lock.release()
-
     def tables(self, *args, **kw):
-        conn = self._get_db_connect()
-        self._begin(conn, read_only=True)
-        c = conn.cursor()
+        self._begin()
+        c = self.conn.cursor()
 
         if with_system_flag:
             c.execute('''select rdb$relation_name TABLE_NAME, 
@@ -70,13 +52,11 @@ class DB(Shared.DC.ZRDB.THUNK.THUNKED_TM):
                 from rdb$relations where rdb$flags=1 
                 order by rdb$relation_name''')
         rows = fetchallmap(c)
-        self._finish(conn)
-        self._putback_db_connect(conn)
+        self._finish()
         return rows
 
     def columns(self, table_name):
-        conn = self._get_db_connect()
-        self._begin(conn, read_only=True)
+        self._begin()
         c = conn.cursor()
 
         r=c.execute('''select A.rdb$field_name NAME, 
@@ -92,13 +72,11 @@ class DB(Shared.DC.ZRDB.THUNK.THUNKED_TM):
 
         rows=fetchallmap(c)
 
-        self._finish(conn)
-        self._putback_db_connect(conn)
+        self._finish()
         return rows
 
     def constraints(self, table_name):
-        conn = self._get_db_connect()
-        self._begin(conn, read_only=True)
+        self._begin()
         c = conn.cursor()
 
         r=c.execute('''select 
@@ -135,8 +113,7 @@ class DB(Shared.DC.ZRDB.THUNK.THUNKED_TM):
 
             d[row['INDEX_ID']]['FIELD_NAME'].append(row['FIELD_NAME'])
 
-        self._finish(conn)
-        self._putback_db_connect(conn)
+        self._finish()
 
         return d
 
@@ -155,9 +132,8 @@ class DB(Shared.DC.ZRDB.THUNK.THUNKED_TM):
         return (index_name, string.strip(rows[0][0]), d)  #index,table,[fields]
 
     def triggers(self, table_name):
-        conn = self._get_db_connect()
-        self._begin(conn, read_only=True)
-        c = conn.cursor()
+        self._begin()
+        c = self.conn.cursor()
 
         if with_system_flag:
             r=c.execute(''' select 
@@ -182,14 +158,12 @@ class DB(Shared.DC.ZRDB.THUNK.THUNKED_TM):
                     order by rdb$trigger_sequence''' % table_name)
 
         rows = fetchallmap(c)
-        self._finish(conn)
-        self._putback_db_connect(conn)
+        self._finish()
         return rows
 
     def check_constraints(self, table_name):
-        conn = self._get_db_connect()
-        self._begin(conn, read_only=True)
-        c = conn.cursor()
+        self._begin()
+        c = self.conn.cursor()
 
         r=c.execute('''select 
             A.rdb$constraint_name CHECK_NAME, 
@@ -208,15 +182,13 @@ class DB(Shared.DC.ZRDB.THUNK.THUNKED_TM):
             d[row[0]] = {'CHECK_NAME': string.strip(row[0]),
                         'CHECK_SOURCE': string.strip(row[1])}
 
-        self._finish(conn)
-        self._putback_db_connect(conn)
+        self._finish()
 
         return d
 
     def generators(self):
-        conn = self._get_db_connect()
-        self._begin(conn, read_only=True)
-        c = conn.cursor()
+        self._begin()
+        c = self.conn.cursor()
 
         if with_system_flag:
             c.execute('''select rdb$generator_name, rdb$system_flag
@@ -236,14 +208,12 @@ class DB(Shared.DC.ZRDB.THUNK.THUNKED_TM):
                     'SYSTEM_FLAG': gen[1],
                     'GENERATOR_COUNT': count})
 
-        self._finish(conn)
-        self._putback_db_connect(conn)
+        self._finish()
         return r
 
     def procedures(self):
-        conn = self._get_db_connect()
-        self._begin(conn, read_only=True)
-        c = conn.cursor()
+        self._begin()
+        c = self.conn.cursor()
 
         c.execute('''select rdb$procedure_name, rdb$procedure_source 
                 from rdb$procedures order by rdb$procedure_name''')
@@ -279,23 +249,15 @@ class DB(Shared.DC.ZRDB.THUNK.THUNKED_TM):
                     'IN_PARAMS': in_params,
                     'OUT_PARAMS':out_params})
 
-        self._finish(conn)
-        self._putback_db_connect(conn)
+        self._finish()
         return r
 
     def open(self):
-        db = self._get_db_connect()
-        self._putback_db_connect(db)
+        self.conn = firebirdsql.connect(**self.conn_args)
         self.opened=DateTime()
 
     def close(self):
-        try:
-            self.lock.acquire()
-            for conn in self.db_conn:
-                conn.close()
-        finally:
-            self.db_conn = []
-            self.lock.release()
+        self.conn.close()
         self.opened = None
 
     def __init__(self,connection):
@@ -309,9 +271,8 @@ class DB(Shared.DC.ZRDB.THUNK.THUNKED_TM):
         self.open()
 
     def query(self,query_string, max_rows=9999999):
-        conn = self._get_db_connect()
-        self._begin(conn)
-        c = conn.cursor()
+        self._begin()
+        c = self.conn.cursor()
 
         queries=filter(None, map(string.strip,string.split(query_string, '\0')))
         if not queries: raise QueryError, 'empty query'
@@ -323,8 +284,7 @@ class DB(Shared.DC.ZRDB.THUNK.THUNKED_TM):
             if d is None: continue
             if desc is None: desc=d
             elif d != desc:
-                self._abort(conn)
-                self._putback_db_connect(conn)
+                self._abort()
                 raise QueryError, (
                     'Multiple incompatible selects in '
                     'multiple sql-statement query'
@@ -333,8 +293,7 @@ class DB(Shared.DC.ZRDB.THUNK.THUNKED_TM):
             if len(result) < max_rows:
                 result=result+c.fetchmany(max_rows-len(result))
 
-        self._finish(conn)
-        self._putback_db_connect(conn)
+        self._finish()
 
         if desc is None:
             return (), ()
@@ -356,11 +315,11 @@ class DB(Shared.DC.ZRDB.THUNK.THUNKED_TM):
 
         return items, result
 
-    def _begin(self, conn, read_only=False):
-        conn.begin()
+    def _begin(self):
+        self.conn.begin()
 
-    def _finish(self, conn):
-        conn.commit()
+    def _finish(self):
+        self.conn.commit()
 
-    def _abort(self, conn):
-        conn.rollback()
+    def _abort(self):
+        self.conn.rollback()
