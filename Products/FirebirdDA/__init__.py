@@ -44,7 +44,7 @@ __module_aliases__=(
     ('Products.AqueductFirebird.DA', DA),
     )
 
-def manage_addFirebirdForm(self, REQUEST, *args, **kw):
+def manage_addFirebirdConnectionForm(self, REQUEST, *args, **kw):
     " "
     DA=getDA()
     return DA.addConnectionForm(
