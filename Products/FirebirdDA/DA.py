@@ -24,7 +24,7 @@ _connections={}
 _connections_lock=ThreadLock.allocate_lock()
 
 addConnectionForm=HTMLFile('dtml/connectionAdd',globals())
-def manage_addZKInterbasdbConnection(
+def manage_addFirebirdConnection(
     self, id, title, connection, check=None, REQUEST=None):
     """Add a DB connection to a folder"""
 

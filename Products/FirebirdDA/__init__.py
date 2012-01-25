@@ -41,30 +41,30 @@ def getDA():
 getDA()
 
 __module_aliases__=(
-    ('Products.AqueductKInterbasdb.DA', DA),
+    ('Products.AqueductFirebird.DA', DA),
     )
 
-def manage_addZKInterbasdbConnectionForm(self, REQUEST, *args, **kw):
+def manage_addFirebirdForm(self, REQUEST, *args, **kw):
     " "
     DA=getDA()
     return DA.addConnectionForm(
         self, self, REQUEST,
         database_type=database_type)
 
-def manage_addZKInterbasdbConnection(
+def manage_addFirebirdConnection(
     self, id, title, connection, check=None, REQUEST=None):
     " "
-    return getDA().manage_addZKInterbasdbConnection(
+    return getDA().manage_addFirebirdConnection(
         self, id, title, connection, check, REQUEST)
 
 def initialize(context):
 
     context.registerClass(
         DA.Connection,
-        permission='Add Z KInterbasdb Database Connections',
-        constructors=(manage_addZKInterbasdbConnectionForm,
-                      manage_addZKInterbasdbConnection),
-        legacy=(manage_addZKInterbasdbConnectionForm,
-                manage_addZKInterbasdbConnection),
+        permission='Add Firebird Database Connections',
+        constructors=(manage_addFirebirdConnectionForm,
+                      manage_addFirebirdConnection),
+        legacy=(manage_addFirebirdConnectionForm,
+                manage_addFirebirdConnection),
     )
 

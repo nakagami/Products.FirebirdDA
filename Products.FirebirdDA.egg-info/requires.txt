@@ -1,2 +1,3 @@
 setuptools
 firebirdsql
+ThreadLock
