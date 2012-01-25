@@ -24,6 +24,7 @@ setup(name='Products.FirebirdDA',
       install_requires=[
           'setuptools',
           'firebirdsql',
+          'ThreadLock',
       ],
       entry_points="""
       # -*- Entry points: -*-
