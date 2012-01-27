@@ -25,6 +25,7 @@ setup(name='Products.FirebirdDA',
           'setuptools',
           'firebirdsql',
           'ThreadLock',
+          'Products.ZSQLMethods',
       ],
       entry_points="""
       # -*- Entry points: -*-
