@@ -291,7 +291,9 @@ class DB(Shared.DC.ZRDB.THUNK.THUNKED_TM):
                     )
 
             if len(result) < max_rows:
-                result=result+c.fetchmany(max_rows-len(result))
+                r = c.fetchmany(max_rows-len(result))
+                if r:
+                    result += r
 
         self._finish()
 
