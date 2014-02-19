@@ -6,7 +6,7 @@ version = '0.6.1'
 setup(name='Products.FirebirdDA',
       version=version,
       description="Firebird database adapter for Zope2",
-      long_description=open("README.txt").read(),
+      long_description=open("README.rst").read(),
       # Get more strings from
       # http://pypi.python.org/pypi?:action=list_classifiers
       classifiers=[
