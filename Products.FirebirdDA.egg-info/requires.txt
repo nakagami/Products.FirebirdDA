@@ -1,4 +1,0 @@
-setuptools
-firebirdsql
-ThreadLock
-Products.ZSQLMethods
