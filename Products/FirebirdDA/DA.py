@@ -70,23 +70,7 @@ class Connection(DABase.Connection):
         _connections_lock.acquire()
         try:
             c=_connections
-            if c.has_key(s):
-                c=self._v_database_connection=c[s]
-                if not c.opened: c.open()
-                return self
-
-            try:
-                try:
-                    self._v_database_connection=c[s]=DB(s)
-                except:
-                    t, v, tb = sys.exc_info()
-                    raise BadRequest, (
-                        '<strong>Invalid connection string: </strong>'
-                        '<CODE>%s</CODE><br />\n'
-                        '%s\n<br />%s\n'
-                        % (s,t,v)), tb
-            finally: tb=None
-
+            self._v_database_connection=c[s]=DB(s)
             return self
         finally:
             _connections_lock.release()

@@ -253,7 +253,6 @@ class DB(Shared.DC.ZRDB.THUNK.THUNKED_TM):
             k,v = s.split('=', 1)
             conn_args[k] = v
         self.conn_args = conn_args
-        self.lock = thread.allocate_lock()
         self.db_conn = []
         self.open()
 
