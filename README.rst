@@ -1,7 +1,15 @@
 FirebirdDA
 ==============
 
- Hajime Nakagami <nakagami@gmail.com>
+FirebirdDA is Zope database adapter for Interbase/Firebird.  
 
-  FirebirdDA is Zope database adapter for Interbase/Firebird.  
+Installation
+-----------------
+
+buildout.cfg::
+
+   eggs =
+       ...
+       firebirdsql
+       Products.FirebirdDA
 
