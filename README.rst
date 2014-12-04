@@ -11,6 +11,5 @@ buildout.cfg::
 
    eggs =
        ...
-       firebirdsql
        Products.FirebirdDA
 
