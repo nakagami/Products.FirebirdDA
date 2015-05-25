@@ -10,6 +10,8 @@ setup(name='Products.FirebirdDA',
       # http://pypi.python.org/pypi?:action=list_classifiers
       classifiers=[
         "Programming Language :: Python",
+        "Framework :: Zope2",
+        "License :: OSI Approved :: Zope Public License",
         ],
       keywords='Firebird',
       author='Hajime Nakagami',
