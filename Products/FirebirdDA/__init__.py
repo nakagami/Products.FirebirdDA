@@ -18,12 +18,6 @@ database_type='Firebird'
 
 from . import DA
 
-class FirebirdError(Exception):
-    pass
-
-class QueryError(FirebirdError):
-    pass
-
 misc_={}
 
 for icon in ('conn', 'table', 'view', 'stable', 'what',
@@ -32,10 +26,6 @@ for icon in ('conn', 'table', 'view', 'stable', 'what',
              'procedure', 'trigger', 'trigger_inactive', 
              'key_primary', 'key_foreign', 'key', 'index', 'check'):
     misc_[icon+'.gif']=ImageFile('icons/%s.gif' % icon, globals())
-
-__module_aliases__=(
-    ('Products.AqueductFirebird.DA', DA),
-    )
 
 def manage_addFirebirdConnectionForm(self, REQUEST, *args, **kw):
     " "
