@@ -261,7 +261,7 @@ class DB(Shared.DC.ZRDB.THUNK.THUNKED_TM):
 
         queries=filter(None, map(string.strip,string.split(query_string, '\0')))
         if not queries:
-            raise OperationnalError('empty query')
+            raise OperationalError('empty query')
         desc=None
         result=[]
         for qs in queries:
@@ -270,7 +270,7 @@ class DB(Shared.DC.ZRDB.THUNK.THUNKED_TM):
             if d is None: continue
             if desc is None: desc=d
             elif d != desc:
-                raise OperationnalError(
+                raise OperationalError(
                     'Multiple incompatible selects in '
                     'multiple sql-statement query'
                     )
