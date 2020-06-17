@@ -16,6 +16,8 @@ import os
 classes=('DA.Connection',)
 database_type='Firebird'
 
+from . import DA
+
 class FirebirdError(Exception):
     pass
 
@@ -30,15 +32,6 @@ for icon in ('conn', 'table', 'view', 'stable', 'what',
              'procedure', 'trigger', 'trigger_inactive', 
              'key_primary', 'key_foreign', 'key', 'index', 'check'):
     misc_[icon+'.gif']=ImageFile('icons/%s.gif' % icon, globals())
-
-DA=None
-def getDA():
-    global DA
-    if DA is None:
-        import DA
-    return DA
-
-getDA()
 
 __module_aliases__=(
     ('Products.AqueductFirebird.DA', DA),

@@ -10,12 +10,12 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-import os, thread, string
+import os
 import firebirdsql
 import Shared.DC.ZRDB.THUNK
 from DateTime import DateTime
 
-from Products.FirebirdDA import QueryError
+from firebirdsql import OperationalError
 
 with_system_flag=0
 
@@ -26,7 +26,7 @@ def fetchallmap(c):
         d = {}
         for i in range(len(desc)):
             key = str(desc[i][0])
-            try: d[key] = string.strip(row[i])
+            try: d[key] = row[i].strip()
             except: d[key] = row[i]
         r.append(d)
     return r
@@ -260,7 +260,8 @@ class DB(Shared.DC.ZRDB.THUNK.THUNKED_TM):
         c = self.conn.cursor()
 
         queries=filter(None, map(string.strip,string.split(query_string, '\0')))
-        if not queries: raise QueryError, 'empty query'
+        if not queries:
+            raise OperationnalError('empty query')
         desc=None
         result=[]
         for qs in queries:
@@ -269,7 +270,7 @@ class DB(Shared.DC.ZRDB.THUNK.THUNKED_TM):
             if d is None: continue
             if desc is None: desc=d
             elif d != desc:
-                raise QueryError, (
+                raise OperationnalError(
                     'Multiple incompatible selects in '
                     'multiple sql-statement query'
                     )
