@@ -25,7 +25,6 @@ setup(name='Products.FirebirdDA',
       install_requires=[
           'setuptools',
           'firebirdsql',
-          'ThreadLock',
           'Products.ZSQLMethods',
       ],
       entry_points="""
