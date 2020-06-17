@@ -29,7 +29,6 @@ for icon in ('conn', 'table', 'view', 'stable', 'what',
 
 def manage_addFirebirdConnectionForm(self, REQUEST, *args, **kw):
     " "
-    DA=getDA()
     return DA.addConnectionForm(
         self, self, REQUEST,
         database_type=database_type)
@@ -37,7 +36,7 @@ def manage_addFirebirdConnectionForm(self, REQUEST, *args, **kw):
 def manage_addFirebirdConnection(
     self, id, title, connection, check=None, REQUEST=None):
     " "
-    return getDA().manage_addFirebirdConnection(
+    return DA.manage_addFirebirdConnection(
         self, id, title, connection, check, REQUEST)
 
 def initialize(context):
