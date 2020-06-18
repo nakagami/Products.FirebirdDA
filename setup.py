@@ -23,7 +23,6 @@ setup(name='Products.FirebirdDA',
       include_package_data=True,
       zip_safe=False,
       install_requires=[
-          'setuptools',
           'firebirdsql',
           'Products.ZSQLMethods',
       ],

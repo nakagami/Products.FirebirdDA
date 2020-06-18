@@ -14,7 +14,7 @@ database_type='Firebird'
 
 import sys
 import six
-from six.moves._thread import allocate_lock
+from _thread import allocate_lock
 
 from .db import DB
 from .DABase import Connection as BaseConnection
