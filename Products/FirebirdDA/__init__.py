@@ -18,15 +18,6 @@ database_type='Firebird'
 
 from . import DA
 
-misc_={}
-
-for icon in ('conn', 'table', 'view', 'stable', 'what',
-             'field', 'text','bin','int','float',
-             'date','time','datetime', 'generator', 'sequence',
-             'procedure', 'trigger', 'trigger_inactive', 
-             'key_primary', 'key_foreign', 'key', 'index', 'check'):
-    misc_[icon+'.gif']=ImageFile('icons/%s.gif' % icon, globals())
-
 def manage_addFirebirdConnectionForm(self, REQUEST, *args, **kw):
     " "
     return DA.addConnectionForm(
@@ -46,5 +37,4 @@ def initialize(context):
         permission='Add Firebird Database Connections',
         constructors=(manage_addFirebirdConnectionForm,
                       manage_addFirebirdConnection),
-    )
-
+        icon='www/da.gif')
