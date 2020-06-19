@@ -17,12 +17,9 @@ import six
 from _thread import allocate_lock
 
 from .db import DB
-from .DABase import Connection as BaseConnection
 import Shared.DC.ZRDB.Connection
 from App.special_dtml import HTMLFile
 from zExceptions import BadRequest
-
-_Connection=Shared.DC.ZRDB.Connection.Connection
 
 _connections={}
 _connections_lock=allocate_lock()
@@ -38,7 +35,7 @@ def manage_addFirebirdConnection(
         id, title, connection, check))
     if REQUEST is not None: return self.manage_main(self,REQUEST)
 
-class Connection(BaseConnection):
+class Connection(Shared.DC.ZRDB.Connection.Connection):
     " "
     database_type=database_type
     id='%s_database_connection' % database_type
@@ -51,24 +48,6 @@ class Connection(BaseConnection):
         if hasattr(self, '_v_database_connection'):
             return self._v_database_connection.opened
         return ''
-
-    def title_and_id(self):
-        s=_Connection.inheritedAttribute('title_and_id')(self)
-        if (hasattr(self, '_v_database_connection') and
-            self._v_database_connection.opened):
-            s="%s, which is connected" % s
-        else:
-            s="%s, which is <font color=red> not connected</font>" % s
-        return s
-
-    def title_or_id(self):
-        s=_Connection.inheritedAttribute('title_and_id')(self)
-        if (hasattr(self, '_v_database_connection') and
-            self._v_database_connection.opened):
-            s="%s (connected)" % s
-        else:
-            s="%s (<font color=red> not connected</font>)" % s
-        return s
 
     def connect(self,s):
         _connections_lock.acquire()
