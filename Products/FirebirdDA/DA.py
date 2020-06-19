@@ -12,16 +12,20 @@
 ##############################################################################
 database_type='Firebird'
 
-from db import DB
-import sys, DABase
-import Shared.DC.ZRDB.Connection, ThreadLock
+import sys
+import six
+from _thread import allocate_lock
+
+from .db import DB
+from .DABase import Connection as BaseConnection
+import Shared.DC.ZRDB.Connection
 from App.special_dtml import HTMLFile
 from zExceptions import BadRequest
 
 _Connection=Shared.DC.ZRDB.Connection.Connection
 
 _connections={}
-_connections_lock=ThreadLock.allocate_lock()
+_connections_lock=allocate_lock()
 
 addConnectionForm=HTMLFile('dtml/connectionAdd',globals())
 def manage_addFirebirdConnection(
@@ -34,7 +38,7 @@ def manage_addFirebirdConnection(
         id, title, connection, check))
     if REQUEST is not None: return self.manage_main(self,REQUEST)
 
-class Connection(DABase.Connection):
+class Connection(BaseConnection):
     " "
     database_type=database_type
     id='%s_database_connection' % database_type

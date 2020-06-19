@@ -11,7 +11,6 @@
 #
 ##############################################################################
 import sys
-from string import join
 import Shared.DC.ZRDB.Connection
 from App.special_dtml import HTMLFile
 from ExtensionClass import Base
@@ -75,7 +74,7 @@ class Connection(Shared.DC.ZRDB.Connection.Connection):
         if name=='tableNamed':
             if not hasattr(self, '_v_tables'): self.tpValues()
             return self._v_tables.__of__(self)
-        raise KeyError, name
+        raise KeyError(name)
 
 class Browser(Base):
     info=None
@@ -136,9 +135,9 @@ class ProcedureBrowser(Browser, Acquisition.Implicit):
         inp = [e['NAME'] + ' ' + field_to_string(e) for e in self.IN_PARAMS]
         outp = [e['NAME'] + ' ' + field_to_string(e) for e in self.OUT_PARAMS]
         if inp:
-            param += '(' + join(inp, ',') + ')'
+            param += '(' + ','.join(inp) + ')'
         if outp:
-            param += ' RETURNS(' + join(outp, ',') + ')'
+            param += ' RETURNS(' + ','.join(outp) + ')'
 
         return [SourceBrowser(self.PROCEDURE_SOURCE, param)]
 

@@ -10,12 +10,12 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-import os, thread, string
+import os
 import firebirdsql
 import Shared.DC.ZRDB.THUNK
 from DateTime import DateTime
 
-from Products.FirebirdDA import QueryError
+from firebirdsql import OperationalError
 
 with_system_flag=0
 
@@ -26,7 +26,7 @@ def fetchallmap(c):
         d = {}
         for i in range(len(desc)):
             key = str(desc[i][0])
-            try: d[key] = string.strip(row[i])
+            try: d[key] = row[i].strip()
             except: d[key] = row[i]
         r.append(d)
     return r
@@ -121,9 +121,9 @@ class DB(Shared.DC.ZRDB.THUNK.THUNKED_TM):
         rows = c.fetchall()
         d = []
         for r in rows:
-            d.append(string.strip(r[1]))
+            d.append(r[1].strip())
 
-        return (index_name, string.strip(rows[0][0]), d)  #index,table,[fields]
+        return (index_name, rows[0][0].strip(), d)  #index,table,[fields]
 
     def triggers(self, table_name):
         c = self.conn.cursor()
@@ -170,8 +170,8 @@ class DB(Shared.DC.ZRDB.THUNK.THUNKED_TM):
 
         d = {}
         for row in rows:
-            d[row[0]] = {'CHECK_NAME': string.strip(row[0]),
-                        'CHECK_SOURCE': string.strip(row[1])}
+            d[row[0]] = {'CHECK_NAME': row[0].strip(),
+                        'CHECK_SOURCE': row[1].strip()}
 
 
         return d
@@ -193,7 +193,7 @@ class DB(Shared.DC.ZRDB.THUNK.THUNKED_TM):
         for gen in gens:
             c.execute(''' select gen_id(%s,0) from rdb$database ''' % gen[0])
             count = c.fetchone()[0]
-            r.append({'GENERATOR_NAME': string.strip(gen[0]),
+            r.append({'GENERATOR_NAME': gen[0].strip(),
                     'SYSTEM_FLAG': gen[1],
                     'GENERATOR_COUNT': count})
 
@@ -249,7 +249,7 @@ class DB(Shared.DC.ZRDB.THUNK.THUNKED_TM):
 
     def __init__(self,connection):
         conn_args = {}
-        for s in string.split(connection):
+        for s in connection.split():
             k,v = s.split('=', 1)
             conn_args[k] = v
         self.conn_args = conn_args
@@ -259,8 +259,9 @@ class DB(Shared.DC.ZRDB.THUNK.THUNKED_TM):
     def query(self,query_string, max_rows=9999999):
         c = self.conn.cursor()
 
-        queries=filter(None, map(string.strip,string.split(query_string, '\0')))
-        if not queries: raise QueryError, 'empty query'
+        queries=filter(None, [q.strip() for q in query_string.split('\0')])
+        if not queries:
+            raise OperationalError('empty query')
         desc=None
         result=[]
         for qs in queries:
@@ -269,7 +270,7 @@ class DB(Shared.DC.ZRDB.THUNK.THUNKED_TM):
             if d is None: continue
             if desc is None: desc=d
             elif d != desc:
-                raise QueryError, (
+                raise OperationalError(
                     'Multiple incompatible selects in '
                     'multiple sql-statement query'
                     )
