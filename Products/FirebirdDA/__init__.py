@@ -30,5 +30,5 @@ def initialize(context):
         DA.Connection,
         permission='Add Firebird Database Connections',
         constructors=(DA.manage_addFirebirdConnectionForm,
-                      DA.manage_addFirebirdConnection),
-        icon='www/da.gif')
+                      DA.manage_addFirebirdConnection)
+    )
