@@ -13,7 +13,6 @@
 database_type='Firebird'
 
 import sys
-import six
 from _thread import allocate_lock
 
 from .db import DB
@@ -24,7 +23,17 @@ from zExceptions import BadRequest
 _connections={}
 _connections_lock=allocate_lock()
 
-manage_addFirebirdConnectionForm=HTMLFile('dtml/connectionAdd',globals())
+
+addConnectionForm=HTMLFile('dtml/connectionAdd',globals())
+
+
+def manage_addFirebirdConnectionForm(self, REQUEST, *args, **kw):
+    """Add a connection form"""
+    return addConnectionForm(
+        self, self, REQUEST,
+        database_type=database_type,
+    )
+
 
 def manage_addFirebirdConnection(
     self, id, title, connection, check=None, REQUEST=None):

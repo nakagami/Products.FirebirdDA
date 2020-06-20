@@ -12,18 +12,6 @@
 ##############################################################################
 from . import DA
 
-def manage_addFirebirdConnectionForm(self, REQUEST, *args, **kw):
-    " "
-    return DA.addConnectionForm(
-        self, self, REQUEST,
-        database_type=database_type)
-
-def manage_addFirebirdConnection(
-    self, id, title, connection, check=None, REQUEST=None):
-    " "
-    return DA.manage_addFirebirdConnection(
-        self, id, title, connection, check, REQUEST)
-
 def initialize(context):
 
     context.registerClass(
