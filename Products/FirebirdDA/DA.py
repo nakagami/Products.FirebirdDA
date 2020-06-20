@@ -18,7 +18,6 @@ from _thread import allocate_lock
 from .db import DB
 import Shared.DC.ZRDB.Connection
 from App.special_dtml import HTMLFile
-from zExceptions import BadRequest
 
 _connections={}
 _connections_lock=allocate_lock()
