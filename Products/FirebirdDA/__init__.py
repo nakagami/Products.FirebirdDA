@@ -10,12 +10,6 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-from App.ImageFile import ImageFile
-import os
-
-classes=('DA.Connection',)
-database_type='Firebird'
-
 from . import DA
 
 def manage_addFirebirdConnectionForm(self, REQUEST, *args, **kw):
@@ -35,6 +29,6 @@ def initialize(context):
     context.registerClass(
         DA.Connection,
         permission='Add Firebird Database Connections',
-        constructors=(manage_addFirebirdConnectionForm,
-                      manage_addFirebirdConnection),
+        constructors=(DA.manage_addFirebirdConnectionForm,
+                      DA.manage_addFirebirdConnection),
         icon='www/da.gif')

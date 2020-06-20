@@ -24,7 +24,8 @@ from zExceptions import BadRequest
 _connections={}
 _connections_lock=allocate_lock()
 
-addConnectionForm=HTMLFile('dtml/connectionAdd',globals())
+manage_addFirebirdConnectionForm=HTMLFile('dtml/connectionAdd',globals())
+
 def manage_addFirebirdConnection(
     self, id, title, connection, check=None, REQUEST=None):
     """Add a DB connection to a folder"""
@@ -40,7 +41,7 @@ class Connection(Shared.DC.ZRDB.Connection.Connection):
     database_type=database_type
     id='%s_database_connection' % database_type
     meta_type=title='%s Database Connection' % database_type
-    icon='misc_/%sDA/conn.gif' % database_type
+    zmi_icon = 'fas fa-database'
 
     manage_properties=HTMLFile('dtml/connectionEdit', globals())
 
