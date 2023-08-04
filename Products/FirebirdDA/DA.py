@@ -47,6 +47,7 @@ def manage_addFirebirdConnection(
 class Connection(Shared.DC.ZRDB.Connection.Connection):
     " "
     database_type=database_type
+    _isAnSQLConnection = True
     id='%s_database_connection' % database_type
     meta_type=title='%s Database Connection' % database_type
     zmi_icon = 'fas fa-database'
