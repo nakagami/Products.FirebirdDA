@@ -14,10 +14,12 @@ import os
 import firebirdsql
 import Shared.DC.ZRDB.THUNK
 from DateTime import DateTime
+import time
 
 from firebirdsql import OperationalError
 
 with_system_flag=0
+CONNECTION_RETRIES = 5
 
 def fetchallmap(c):
     desc = c.description
@@ -54,47 +56,66 @@ class DB(Shared.DC.ZRDB.THUNK.THUNKED_TM):
         self.open()
 
     def query(self,query_string, max_rows=9999999):
-        c = self.conn.cursor()
+        for i in range(CONNECTION_RETRIES):
+            # if necessary: retries for broken pipe,
+            # invalid db handle or recv() packets problem
+            # which can occur when the firebird server is restarted
+            try:
+                c = self.conn.cursor()
 
-        queries=filter(None, [q.strip() for q in query_string.split('\0')])
-        if not queries:
-            raise OperationalError('empty query')
-        desc=None
-        result=[]
-        for qs in queries:
-            c.execute(qs)
-            d=c.description
-            if d is None: continue
-            if desc is None: desc=d
-            elif d != desc:
-                raise OperationalError(
-                    'Multiple incompatible selects in '
-                    'multiple sql-statement query'
-                    )
+                queries=filter(None, [q.strip() for q in query_string.split('\0')])
+                if not queries:
+                    raise OperationalError('empty query')
+                desc=None
+                result=[]
+                for qs in queries:
+                    c.execute(qs)
 
-            if len(result) < max_rows:
-                r = c.fetchmany(max_rows-len(result))
-                if r:
-                    result += r
+                    d=c.description
+                    if d is None: continue
+                    if desc is None: desc=d
+                    elif d != desc:
+                        raise OperationalError(
+                            'Multiple incompatible selects in '
+                            'multiple sql-statement query'
+                            )
+                    if len(result) < max_rows:
+                        r = c.fetchmany(max_rows-len(result))
+                        if r:
+                            result += r
 
 
-        if desc is None:
-            return (), ()
+                if desc is None:
+                    return (), ()
 
-        items=[]
-        for name, type, width, ds, p, scale, null_ok in desc:
-            if type=='NUMBER':
-                if scale==0: type='i'
-                else: type='n'
-            elif type=='DATE':
-                type='d'
-            else: type='s'
-            items.append({
-                'name': name,
-                'type': type,
-                'width': width,
-                'null': null_ok,
-                })
+                items=[]
+                for name, type, width, ds, p, scale, null_ok in desc:
+                    if type=='NUMBER':
+                        if scale==0: type='i'
+                        else: type='n'
+                    elif type=='DATE':
+                        type='d'
+                    else: type='s'
+                    items.append({
+                        'name': name,
+                        'type': type,
+                        'width': width,
+                        'null': null_ok,
+                        })
 
-        return items, result
-
+                return items, result
+            
+            except OperationalError as e:
+                # these errors only occur very briefly
+                # after the firebird server is restarted
+                # soon thereafter, there will be a broken pipe error
+                if e and e.args[0] in ('Can not recv() packets',
+                    '_op_allocate_statement() Invalid db handle'):
+                    time.sleep(1)
+                    self.close()
+                    self.open()
+                else:
+                    raise OperationalError(e)
+            except BrokenPipeError:
+                self.close()
+                self.open()
