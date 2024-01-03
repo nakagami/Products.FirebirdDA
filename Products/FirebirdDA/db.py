@@ -106,16 +106,19 @@ class DB(Shared.DC.ZRDB.THUNK.THUNKED_TM):
                 return items, result
             
             except OperationalError as e:
-                # these errors only occur very briefly
-                # after the firebird server is restarted
-                # soon thereafter, there will be a broken pipe error
                 if e and e.args[0] in ('Can not recv() packets',
+                    # these error only occurs very briefly
+                    # after the firebird server is restarted
+                    # soon thereafter, there will be a broken pipe error
                     '_op_allocate_statement() Invalid db handle'):
                     time.sleep(1)
                     self.close()
                     self.open()
+                elif e and 'too many open handles to database' in e.args[0]:  
+                    self.close()
+                    self.open()
                 else:
-                    raise OperationalError(e)
+                    raise OperationalError(str(e))
             except BrokenPipeError:
                 self.close()
                 self.open()
