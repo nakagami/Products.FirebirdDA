@@ -39,7 +39,8 @@ if _DRIVER == "firebird-driver":
     from firebird.driver import DatabaseError as Error
     from firebird.driver import InterfaceError
     from firebird.driver import connect as _raw_connect
-    from firebird.driver.core import TPB
+    from firebird.driver import tpb as _make_tpb
+    from firebird.driver.types import Isolation as _Isolation
 
     # libfbclient installs a C-level SIGTERM handler via sigaction()
     # on the first connect(), which swallows SIGTERM entirely.
@@ -321,8 +322,9 @@ class DB(Shared.DC.ZRDB.THUNK.THUNKED_TM):
         if _DRIVER == "firebirdsql":
             self.conn.set_autocommit(True)
         else:
-            tpb = TPB(auto_commit=True)
-            self.conn.default_tpb = tpb.get_buffer()
+            self.conn.main_transaction.default_tpb = _make_tpb(
+                _Isolation.READ_COMMITTED
+            )
         self.opened = DateTime()
 
     def close(self):
@@ -366,6 +368,20 @@ class DB(Shared.DC.ZRDB.THUNK.THUNKED_TM):
                     r = c.fetchmany(max_rows - len(result))
                     if r:
                         result += r
+
+            if _DRIVER == "firebird-driver":
+                # Commit so the next query gets a fresh READ_COMMITTED
+                # snapshot. Not needed for firebirdsql (autocommit is on).
+                self.conn.commit()
+        except Exception:
+            if _DRIVER == "firebird-driver":
+                # Rollback so the failed query does not leave an open
+                # transaction behind. Accumulated open transactions prevent
+                # the OAT from advancing, eventually triggering a server-
+                # side "connection shutdown" (GDS 335544856).
+                with contextlib.suppress(Exception):
+                    self.conn.rollback()
+            raise
         finally:
             with contextlib.suppress(Exception):
                 c.close()
