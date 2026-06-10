@@ -22,8 +22,20 @@
     </div>
     </td>
     <td align="left" valign="top">
-    <input type="text" name="title" size="40" 
+    <input type="text" name="title" size="40"
      value="&dtml-title;" />
+    </td>
+  </tr>
+  <tr>
+    <td align="left" valign="top">
+    <div class="form-label">
+    Driver
+    </div>
+    </td>
+    <td align="left" valign="top">
+    <div class="form-text">
+    &dtml-driver_name;
+    </div>
     </td>
   </tr>
   <tr>
@@ -35,8 +47,7 @@
     <td align="left" valign="top">
     <div class="form-text">
     <em>
-          ex)<br>
-          dsn=host:/path user=myname password=pass
+          format: dsn=host[:port]/path user=myname password=pass
     </em>
     </div>
     <div class="form-text">
