@@ -13,6 +13,7 @@
 import contextlib
 import datetime
 import decimal
+import html
 import os
 import re
 import signal
@@ -30,6 +31,12 @@ if not _DRIVER:
         _DRIVER = "firebirdsql"
     except ImportError:
         _DRIVER = "firebird-driver"
+
+if _DRIVER not in ("firebirdsql", "firebird-driver"):
+    raise RuntimeError(
+        f"Unsupported FIREBIRDDA_DRIVER {_DRIVER!r}; expected "
+        "'firebirdsql' or 'firebird-driver'"
+    )
 
 if _DRIVER == "firebird-driver":
     import ctypes
@@ -234,9 +241,18 @@ def _caller_is_manager():
         return False
 
 
+def _html_safe(value):
+    """Normalise to str, HTML-escape, then render newlines as <br/>.
+
+    Defends against Zope TaintedString input (SQL containing < or >)
+    and keeps unescaped error/SQL text out of the HTML output.
+    """
+    return html.escape(str(value), quote=True).replace("\n", "<br/>")
+
+
 def _format_firebirdsql_error(exc):
     """Format a firebirdsql exception as an HTML-safe error message."""
-    msg = _exception_message(exc).replace("\n", "<br/>")
+    msg = _html_safe(_exception_message(exc))
     op = OperationalError(msg)
     op.args = (msg,)
     return op
@@ -248,24 +264,24 @@ def _format_firebird_driver_error(exc, query_string, include_sql=False):
 
     orig = str(exc).strip()
     if orig:
-        parts.append(f"Error: {orig.replace(chr(10), '<br/>')}")
+        parts.append(f"Error: {_html_safe(orig)}")
 
     sqlstate = getattr(exc, "sqlstate", None)
     if sqlstate:
         if isinstance(sqlstate, bytes):
             sqlstate = sqlstate.decode("ascii", "replace")
-        parts.append(f"SQLSTATE: {sqlstate}")
+        parts.append(f"SQLSTATE: {_html_safe(sqlstate)}")
 
     sqlcode = getattr(exc, "sqlcode", None)
     if sqlcode is not None:
-        parts.append(f"SQLCODE: {sqlcode}")
+        parts.append(f"SQLCODE: {_html_safe(sqlcode)}")
 
     if query_string and include_sql:
-        snippet = query_string.strip()
+        snippet = str(query_string).strip()
         max_len = 2000
         if len(snippet) > max_len:
             snippet = snippet[:max_len] + "\n  ... (truncated)"
-        parts.append(f"SQL: {snippet}")
+        parts.append(f"SQL: {_html_safe(snippet)}")
 
     return "<br/>".join(parts)
 
