@@ -10,6 +10,12 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
+# Single source of truth for the package version: setup.py parses this
+# line, DA.py imports it for the ZMI display. Must stay ABOVE the DA
+# import -- DA.py does ``from . import __version__`` while this module
+# is still initialising.
+__version__ = '0.8.0'
+
 from . import DA
 
 def initialize(context):

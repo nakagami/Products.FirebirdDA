@@ -1,10 +1,18 @@
+import re
 from pathlib import Path
 
 from setuptools import setup, find_packages
 
-version = '0.7.1'
-
 here = Path(__file__).parent
+
+# Single source of truth: Products/FirebirdDA/__init__.py.__version__
+# (read as text -- importing the package would pull in Zope/driver deps).
+version = re.search(
+    r"^__version__ = '([^']+)'",
+    here.joinpath('Products', 'FirebirdDA', '__init__.py').read_text(
+        encoding='utf-8'),
+    re.M,
+).group(1)
 long_description = (
     here.joinpath('README.rst').read_text(encoding='utf-8')
     + '\n\n'

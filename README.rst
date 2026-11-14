@@ -53,6 +53,12 @@ driver's ``connect()`` function.  When using ``firebird-driver``, the
 DSN is automatically converted from ``firebirdsql`` format
 (``host:/path``) to ``firebird-driver`` format (``host:path``).
 
+All other ``key=value`` pairs are passed to ``connect()`` unchanged.
+With ``firebirdsql`` a ``timeout=5`` entry is recommended: it bounds
+socket connect and read waits, so a hanging (as opposed to refusing)
+Firebird host cannot block a Zope worker thread for the full OS TCP
+timeout.  ``firebird-driver`` does not accept a ``timeout`` key.
+
 Driver Differences
 ------------------
 
@@ -68,6 +74,44 @@ When switching from ``firebirdsql`` to ``firebird-driver``, code that
 compares or displays ``CHAR`` values may need explicit ``rstrip()``
 calls, or the column can be migrated from ``CHAR(n)`` to
 ``VARCHAR(n)``.
+
+Multi-statement batches (Z SQL Methods using ``<dtml-var
+sql_delimiter>``) also differ on partial failure: ``firebirdsql`` runs
+with autocommit, so statements before a failing one remain committed;
+``firebird-driver`` executes the whole batch in a single transaction
+and rolls it back on error, undoing the earlier statements.
+
+Connection-Loss Retries
+-----------------------
+
+When a connection is lost mid-query, FirebirdDA reconnects and retries
+the query only if every statement in the batch starts with ``SELECT``.
+Anything else fails immediately, because the server may already have
+committed the write before the connection dropped -- replaying it could
+execute the write twice.
+
+Note the limit of this lexical check: a ``SELECT`` with server-side
+effects -- ``SELECT GEN_ID(SEQ, 1) FROM RDB$DATABASE`` or a selectable
+stored procedure that writes -- passes the gate and may be executed a
+second time after a reconnect.
+
+ConnectionIdleTimeout
+---------------------
+
+Leave ``ConnectionIdleTimeout`` unset in ``firebird.conf`` and
+``databases.conf``.  The engine default of 0 disables the idle timer.
+
+FirebirdDA keeps one connection open for the life of the Zope worker.
+Between requests that attachment is idle on purpose.  A short timeout
+closes it.  The next request then receives ``isc_att_shutdown`` with
+the secondary error ``isc_att_shut_idle``.  A pure ``SELECT`` is
+retried once.  An ``INSERT``, ``UPDATE``, ``DELETE`` or ``WITH`` is
+not retried, so that request fails.  The following request opens a
+new connection.
+
+A timeout of several hours still reclaims an attachment whose TCP
+close the server never noticed, and it can fail the first write after
+a long quiet period.  Leave the setting unset to avoid that.
 
 Test Tab
 --------

@@ -32,50 +32,50 @@ ISQL_META_COMMANDS = {
     'show tables': (
         "SELECT TRIM(RDB$RELATION_NAME) AS TABLE_NAME "
         "FROM RDB$RELATIONS "
-        "WHERE RDB$SYSTEM_FLAG = 0 AND RDB$VIEW_BLR IS NULL "
+        "WHERE COALESCE(RDB$SYSTEM_FLAG, 0) = 0 AND RDB$VIEW_BLR IS NULL "
         "ORDER BY RDB$RELATION_NAME"
     ),
     'show views': (
         "SELECT TRIM(RDB$RELATION_NAME) AS VIEW_NAME "
         "FROM RDB$RELATIONS "
-        "WHERE RDB$SYSTEM_FLAG = 0 AND RDB$VIEW_BLR IS NOT NULL "
+        "WHERE COALESCE(RDB$SYSTEM_FLAG, 0) = 0 AND RDB$VIEW_BLR IS NOT NULL "
         "ORDER BY RDB$RELATION_NAME"
     ),
     'show procedures': (
         "SELECT TRIM(RDB$PROCEDURE_NAME) AS PROCEDURE_NAME "
         "FROM RDB$PROCEDURES "
-        "WHERE RDB$SYSTEM_FLAG = 0 "
+        "WHERE COALESCE(RDB$SYSTEM_FLAG, 0) = 0 "
         "ORDER BY RDB$PROCEDURE_NAME"
     ),
     'show functions': (
         "SELECT TRIM(RDB$FUNCTION_NAME) AS FUNCTION_NAME "
         "FROM RDB$FUNCTIONS "
-        "WHERE RDB$SYSTEM_FLAG = 0 "
+        "WHERE COALESCE(RDB$SYSTEM_FLAG, 0) = 0 "
         "ORDER BY RDB$FUNCTION_NAME"
     ),
     'show triggers': (
         "SELECT TRIM(RDB$TRIGGER_NAME) AS TRIGGER_NAME "
         "FROM RDB$TRIGGERS "
-        "WHERE RDB$SYSTEM_FLAG = 0 "
+        "WHERE COALESCE(RDB$SYSTEM_FLAG, 0) = 0 "
         "ORDER BY RDB$TRIGGER_NAME"
     ),
     'show generators': (
         "SELECT TRIM(RDB$GENERATOR_NAME) AS GENERATOR_NAME "
         "FROM RDB$GENERATORS "
-        "WHERE RDB$SYSTEM_FLAG = 0 "
+        "WHERE COALESCE(RDB$SYSTEM_FLAG, 0) = 0 "
         "ORDER BY RDB$GENERATOR_NAME"
     ),
     'show domains': (
         "SELECT TRIM(RDB$FIELD_NAME) AS DOMAIN_NAME "
         "FROM RDB$FIELDS "
-        "WHERE RDB$SYSTEM_FLAG = 0 "
+        "WHERE COALESCE(RDB$SYSTEM_FLAG, 0) = 0 "
         "AND RDB$FIELD_NAME NOT STARTING WITH 'RDB$' "
         "ORDER BY RDB$FIELD_NAME"
     ),
     'show exceptions': (
         "SELECT TRIM(RDB$EXCEPTION_NAME) AS EXCEPTION_NAME "
         "FROM RDB$EXCEPTIONS "
-        "WHERE RDB$SYSTEM_FLAG = 0 "
+        "WHERE COALESCE(RDB$SYSTEM_FLAG, 0) = 0 "
         "ORDER BY RDB$EXCEPTION_NAME"
     ),
     'show version': (
@@ -86,7 +86,9 @@ ISQL_META_COMMANDS = {
         "SELECT "
         "rdb$get_context('SYSTEM', 'DB_NAME') AS DATABASE_NAME, "
         "rdb$get_context('SYSTEM', 'ENGINE_VERSION') AS ENGINE_VERSION, "
-        "rdb$get_context('SYSTEM', 'CURRENT_USER') AS CURRENT_USER "
+        # CURRENT_USER is a reserved word, so it cannot be used as an
+        # unquoted alias -- USER_NAME can.
+        "rdb$get_context('SYSTEM', 'CURRENT_USER') AS USER_NAME "
         "FROM RDB$DATABASE"
     ),
 }
